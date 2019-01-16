@@ -9,7 +9,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,12 +18,19 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class LoadFeedData extends AsyncTask <Void,Void,String>{
+public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
+
+    public AsyncResponse delegate = null;
+
+    public ArrayList<Object> arrayList;
 
     private final String mUrl =
             "https://picasaweb.google.com/data/feed/api/all?kind=photo&q=" +
@@ -39,15 +47,15 @@ public class LoadFeedData extends AsyncTask <Void,Void,String>{
 
 
     @Override
-    protected String doInBackground(Void... params) {
+    protected ArrayList<Object> doInBackground(Void... params) {
         InputStream stream = null;
         HttpsURLConnection connection = null;
-        String result = null;
+        ArrayList<Object> result = null;
         Log.i("LoadFeedData","inside doInBackground");
         try {
             Log.i("LoadFeedData","inside doInBackground 1");
-            URL url = new URL(mUrl);
             Log.i("LoadFeedData","inside doInBackground 2");
+            URL url = new URL(gitUrl);
             connection = (HttpsURLConnection) url.openConnection();
             // Timeout for reading InputStream arbitrarily set to 3000ms.
             Log.i("LoadFeedData","inside doInBackground 3");
@@ -79,7 +87,7 @@ public class LoadFeedData extends AsyncTask <Void,Void,String>{
             Log.i("LoadFeedData","Stream inside"+stream );
             if (stream != null) {
                 // Converts Stream to String with max length of 500.
-                result = readStream(stream, 500);
+                result = readStream(stream, 5000);
                 Log.i("LoadFeedData","Result inside"+result );
             }
 
@@ -90,7 +98,7 @@ public class LoadFeedData extends AsyncTask <Void,Void,String>{
         finally {
             // Close Stream and disconnect HTTPS connection.
             if (stream != null) {
-                //stream.close();
+                //stream.clo  se();
             }
             if (connection != null) {
                 connection.disconnect();
@@ -99,25 +107,55 @@ public class LoadFeedData extends AsyncTask <Void,Void,String>{
         return result;
     }
 
-    public String readStream(InputStream stream, int maxReadSize)
-            throws IOException, UnsupportedEncodingException {
+    public ArrayList<Object> readStream(InputStream stream, int maxReadSize)
+            throws IOException, UnsupportedEncodingException,JSONException {
         Reader reader = null;
         reader = new InputStreamReader(stream, "UTF-8");
         char[] rawBuffer = new char[maxReadSize];
         int readSize;
         StringBuffer buffer = new StringBuffer();
+        //readSize = reader.read(rawBuffer);
+       // String s = new String(reader);
+        //List<String> list = new ArrayList<String>(Arrays.asList(s.split(",")));
+        //Log.d("loadFeedData","string is "+s);
+        //Log.d("loadFeedData","list is "+list);
+       // buffer.append(rawBuffer, 0, readSize);
+
+
         while (((readSize = reader.read(rawBuffer)) != -1) && maxReadSize > 0) {
+            Log.d("LoadFeedData","readSize"+readSize);
             if (readSize > maxReadSize) {
                 readSize = maxReadSize;
             }
+            Log.d("LoadFeedData","readSize"+readSize);
+            Log.d("LoadFeedData","charArray is"+rawBuffer);
             buffer.append(rawBuffer, 0, readSize);
             maxReadSize -= readSize;
+            Log.d("LoadFeedData","max readSize"+maxReadSize);
         }
-        return buffer.toString();
+        String conString = buffer.toString();
+        JSONObject jsonObj = new JSONObject(conString);
+        arrayList = new ArrayList<Object>();
+        Iterator<String> keys = jsonObj.keys();
+
+        while(keys.hasNext()) {
+            String key = keys.next();
+            Object temp = jsonObj.get(key);
+            arrayList.add(temp);
+            Log.d("LoadFeedData outside ","json content is "+temp);
+            if (jsonObj.get(key) instanceof JSONObject) {
+                Log.d("LoadFeedData inside","json content is "+jsonObj.get(key));
+            }
+        }
+        Log.d("LoadFeedData","List is "+arrayList);
+        Log.d("LoadFeedData","Reader object is "+reader);
+        Log.d("LoadFeedData","jsonObject is"+jsonObj);
+        return arrayList;
     }
 
-    protected void onPostExecute(String result) {
-        Log.d("LoadFeedData","Result is "+result);
+    protected  void onPostExecute(ArrayList<Object> list) {
+        Log.d("LoadFeedData post","List is "+list);
+        delegate.processFinish(list);
     }
 
 }
