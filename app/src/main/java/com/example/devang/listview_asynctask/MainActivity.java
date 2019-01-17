@@ -18,6 +18,9 @@ public class MainActivity extends ListActivity implements AsyncResponse {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LoadLocalData loadLocalData = new LoadLocalData();
+        loadLocalData.execute();
+
         LoadFeedData loadFeedData = new LoadFeedData();
         loadFeedData.delegate = this;
         loadFeedData.execute();
