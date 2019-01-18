@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,7 +15,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class LoadLocalData extends AsyncTask<Void,Void,String> {
 
-    private final String localUrl = "http://10.0.2.2:9999/ClinicSoln/echo/getPatientDetail";
+    private final String localUrl = "http://10.0.2.2:9999/ClinicSoln/cliniclogin/dologin";
 
     public String result;
 
@@ -28,13 +29,20 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
         InputStream stream = null;
         HttpURLConnection connection = null;
         result = null;
+        String loginData = "username=devang&password=devang";
         try{
             URL url = new URL(localUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(3000);
             connection.setConnectTimeout(3000);
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod("POST");
             connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            byte[] outputInBytes = loginData.getBytes("UTF-8");
+            OutputStream os = connection.getOutputStream();
+            os.write( outputInBytes );
+            os.close();
             connection.connect();
             int resCode = connection.getResponseCode();
 
@@ -55,7 +63,7 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
             Log.d("LoadLocalData","Exception is"+e);
         }
 
-        return "dfjds";
+        return result;
     }
 
     public String readStream(InputStream stream, int maxLength) throws Exception{
