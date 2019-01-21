@@ -3,6 +3,8 @@ package com.example.devang.listview_asynctask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.apache.http.HttpConnection;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,8 +18,9 @@ import javax.net.ssl.HttpsURLConnection;
 public class LoadLocalData extends AsyncTask<Void,Void,String> {
 
     private final String localUrl = "http://10.0.2.2:9999/ClinicSoln/cliniclogin/dologin";
+    private final String echoUrl = "http://10.0.2.2:9999/ClinicSoln/echo";
 
-    public String result;
+    public String result , resultGet;
 
     public LoadLocalData(){
 
@@ -26,8 +29,9 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
     @Override
     protected String doInBackground(Void... params){
 
-        InputStream stream = null;
+        InputStream stream = null , getStream;
         HttpURLConnection connection = null;
+        HttpURLConnection getConnection = null;
         result = null;
         String loginData = "username=devang&password=devang";
         try{
@@ -45,8 +49,9 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
             os.close();
             connection.connect();
             int resCode = connection.getResponseCode();
-
+            String bearerToken = connection.getHeaderField("authorization");
             Log.d("LoadLocalData","response code ="+resCode);
+            Log.d("LoadLocalData","bearer token is ="+bearerToken);
 
             if (resCode != HttpsURLConnection.HTTP_OK) {
                 throw new IOException("HTTP error code: " + resCode);
@@ -58,12 +63,26 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
             if (stream!=null){
                 result = readStream(stream,5000);
             }
+            URL urlForEcho = new URL(echoUrl);
+            getConnection = (HttpURLConnection) urlForEcho.openConnection();
+            getConnection.setReadTimeout(3000);
+            getConnection.setConnectTimeout(3000);
+            getConnection.setRequestMethod("GET");
+            getConnection.setDoInput(true);
+            getConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            getConnection.setRequestProperty("Authorization", bearerToken);
+            Log.d("LoadLocalData","request header is"+getConnection.getRequestProperty("Authorization"));
+            getConnection.connect();
+            getStream = getConnection.getInputStream();
+            resultGet = readStream(getStream , 5000);
+            resCode = getConnection.getResponseCode();
+            Log.d("LoadLocalData","get rest service response code is "+resCode);
         }
         catch(Exception e){
             Log.d("LoadLocalData","Exception is"+e);
         }
 
-        return result;
+        return resultGet;
     }
 
     public String readStream(InputStream stream, int maxLength) throws Exception{
