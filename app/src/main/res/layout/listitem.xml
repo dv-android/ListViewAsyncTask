@@ -32,5 +32,13 @@
         android:layout_toRightOf="@+id/listImage"
         android:text="The List item description"
         android:textSize="14sp" />
+    <CheckBox android:id="@+id/checkbox_cheese"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/listDescription"
+        android:text="JaySwamiNarayan"
+        android:layout_marginTop="5dp"
+        android:maxLines="4"
+        android:layout_toRightOf="@+id/listImage"/>
 
 </RelativeLayout>

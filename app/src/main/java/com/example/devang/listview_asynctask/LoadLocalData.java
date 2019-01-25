@@ -18,9 +18,10 @@ import javax.net.ssl.HttpsURLConnection;
 public class LoadLocalData extends AsyncTask<Void,Void,String> {
 
     private final String localUrl = "http://10.0.2.2:9999/ClinicSoln/cliniclogin/dologin";
-    private final String echoUrl = "http://10.0.2.2:9999/ClinicSoln/echo";
+    private final String echoUrl = "http://10.0.2.2:9999/ClinicSoln/echo/getPatientDetail?patient_id=Ravi";
 
     public String result , resultGet;
+    public  int resCode;
 
     public LoadLocalData(){
 
@@ -34,7 +35,7 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
         HttpURLConnection getConnection = null;
         result = null;
         String loginData = "username=devang&password=devang";
-        try{
+        try{/**
             URL url = new URL(localUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(3000);
@@ -48,7 +49,7 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
             os.write( outputInBytes );
             os.close();
             connection.connect();
-            int resCode = connection.getResponseCode();
+            resCode = connection.getResponseCode();
             String bearerToken = connection.getHeaderField("authorization");
             Log.d("LoadLocalData","response code ="+resCode);
             Log.d("LoadLocalData","bearer token is ="+bearerToken);
@@ -62,16 +63,17 @@ public class LoadLocalData extends AsyncTask<Void,Void,String> {
 
             if (stream!=null){
                 result = readStream(stream,5000);
-            }
+            } */
             URL urlForEcho = new URL(echoUrl);
             getConnection = (HttpURLConnection) urlForEcho.openConnection();
             getConnection.setReadTimeout(3000);
             getConnection.setConnectTimeout(3000);
             getConnection.setRequestMethod("GET");
             getConnection.setDoInput(true);
-            getConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            getConnection.setRequestProperty("Authorization", bearerToken);
-            Log.d("LoadLocalData","request header is"+getConnection.getRequestProperty("Authorization"));
+            //getConnection.setDoOutput(true);
+            //getConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            //getConnection.setRequestProperty("Authorization", bearerToken);
+            //Log.d("LoadLocalData","request header is"+getConnection.getRequestProperty("Authorization"));
             getConnection.connect();
             getStream = getConnection.getInputStream();
             resultGet = readStream(getStream , 5000);
