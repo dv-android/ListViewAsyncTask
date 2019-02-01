@@ -30,6 +30,8 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
 
     public AsyncResponse delegate = null;
 
+    public TaskCallback mTaskCallback;
+
     public ArrayList<Object> arrayList;
 
     private final String mUrl =
@@ -45,7 +47,9 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
     public LoadFeedData(){}
 
 
-
+    static interface TaskCallback{
+        public void taskFinish(ArrayList<Object> list);
+    }
     @Override
     protected ArrayList<Object> doInBackground(Void... params) {
         InputStream stream = null;
@@ -155,7 +159,8 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
 
     protected  void onPostExecute(ArrayList<Object> list) {
         Log.d("LoadFeedData post","List is "+list);
-        delegate.processFinish(list);
+        //delegate.processFinish(list);
+        mTaskCallback.taskFinish(list);
     }
 
 }

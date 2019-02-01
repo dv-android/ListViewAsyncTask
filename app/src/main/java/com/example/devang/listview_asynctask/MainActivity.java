@@ -20,39 +20,37 @@ import java.util.ArrayList;
 
 public class MainActivity extends ListActivity implements AsyncResponse {
 
+    private HeadlessNetworkFragment mHeadlessNetworkFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        //setContentView(R.layout.activity_main);
+
+
+        mHeadlessNetworkFragment = (HeadlessNetworkFragment)getFragmentManager()
+                .findFragmentByTag("counter_fragment");
+        if(mHeadlessNetworkFragment == null) {
+            mHeadlessNetworkFragment = new HeadlessNetworkFragment();
+            getFragmentManager().beginTransaction().add(mHeadlessNetworkFragment, "counter_fragment").commit();
+        }
+        //mHeadlessNetworkFragment.mAsyncResponse = this;
         Log.d("MainActivity", "onCreate called");
         Log.d("MainActivity","Build SDK version is "+ Build.VERSION.SDK_INT);
-        LoadLocalData loadLocalData = new LoadLocalData();
-        loadLocalData.execute();
 
-        LoadFeedData loadFeedData = new LoadFeedData();
-        loadFeedData.delegate = this;
-        loadFeedData.execute();
 
 
     }
 
-    @Override
     public void processFinish(ArrayList<Object> list) {
+
         Log.d("MainActivity","list is "+list);
+        Log.d("MainActivity","process finish list is "+list);
         ListAdapter adapter = new ArrayAdapter<Object>(this,R.layout.listitemlayout,list);
         setListAdapter(adapter);
         final ListView listView;
         listView = getListView();
         listView.setItemChecked(0, true);
-        /**listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Log.d("MainActivity","checkBox clicked");
 
-            }
-        }); */
     }
 }
 
