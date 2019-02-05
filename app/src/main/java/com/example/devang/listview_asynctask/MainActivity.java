@@ -34,21 +34,16 @@ public class MainActivity extends ListActivity implements AsyncResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
-        if(savedInstanceState!=null){
-            state = savedInstanceState.getParcelable("listViewState");
-            Log.d("D :- Main Activity","-onRestoreInstanceState onCreate "+state);
-            getListView().onRestoreInstanceState(state);
-        }
         Log.d("D :- MainActivity", "onCreate");
         mHeadlessNetworkFragment = (HeadlessNetworkFragment)getFragmentManager()
                 .findFragmentByTag("counter_fragment");
         if(mHeadlessNetworkFragment == null) {
+            Log.d("D:- Main Activity ","else part executed");
             mHeadlessNetworkFragment = new HeadlessNetworkFragment();
             getFragmentManager().beginTransaction().add(mHeadlessNetworkFragment, "counter_fragment").commit();
         }
-        //mHeadlessNetworkFragment.mAsyncResponse = this;
+
         //Log.d("MainActivity","Build SDK version is "+ Build.VERSION.SDK_INT);
 
 
