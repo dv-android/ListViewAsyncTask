@@ -10,13 +10,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+ import java.util.ArrayList;
 
-public class HeadlessNetworkFragment extends Fragment implements LoadFeedData.TaskCallback{
+public class HeadlessNetworkFragment extends Fragment implements Serializable,LoadFeedData.TaskCallback{
 
     private boolean mDownloading = false;
 
     public AsyncResponse mAsyncResponse;
+
+    public ArrayList<Object> arrayListFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
@@ -81,7 +84,9 @@ public class HeadlessNetworkFragment extends Fragment implements LoadFeedData.Ta
     }
 
     @Override
-    public void taskFinish(ArrayList<Object> list){
+    public void taskFinish(ArrayList<Object> list)
+    {
+        arrayListFragment = list;
         mAsyncResponse.processFinish(list);
     }
 }

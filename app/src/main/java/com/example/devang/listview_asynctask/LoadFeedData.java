@@ -82,7 +82,7 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
             Log.i("LoadFeedData","inside doInBackground 9 response code ="+responseCode);
             if (responseCode != HttpsURLConnection.HTTP_OK) {
                 Log.i("LoadFeedData","inside doInBackground 10 connection not established"+responseCode);
-                throw new IOException("HTTP error code: " + responseCode);
+                 throw new IOException("HTTP error code: " + responseCode);
             }
             // Retrieve the response body as an InputStream.
             Log.i("LoadFeedData","inside doInBackground 10");
@@ -107,8 +107,9 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
             if (connection != null) {
                 connection.disconnect();
             }
+            return result;
         }
-        return result;
+
     }
 
     public ArrayList<Object> readStream(InputStream stream, int maxReadSize)
@@ -119,7 +120,7 @@ public class LoadFeedData extends AsyncTask <Void,Void,ArrayList<Object>>{
         int readSize;
         StringBuffer buffer = new StringBuffer();
         //readSize = reader.read(rawBuffer);
-       // String s = new String(reader);
+        // String s = new String(reader);
         //List<String> list = new ArrayList<String>(Arrays.asList(s.split(",")));
         //Log.d("loadFeedData","string is "+s);
         //Log.d("loadFeedData","list is "+list);
